@@ -17,11 +17,13 @@ const handleResponse = async (response) => {
     const data = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
-        throw new ApiError(
-            data.detail || 'Error en la petición',
-            response.status,
-            data
-        );
+        let errorMessage = 'Error en la petición';
+        if (response.status === 404) {
+            errorMessage = 'Recurso no encontrado (404)';
+        } else if (response.status === 500) {
+            errorMessage = 'Error interno del servidor (500)';
+        }
+        throw new ApiError(errorMessage, response.status, data);
     }
 
     return data;
