@@ -1,4 +1,6 @@
-const API_BASE_URL = 'https://backend-t3-diohe.onrender.com';
+const RECOMMENDER_BASE_URL = 'https://recommencer3g.onrender.com';
+const CLASSIFIER_BASE_URL = 'https://classifier-images.onrender.com';
+const SALES_PREDICTION_BASE_URL = 'https://sales-prediction-g5xo.onrender.com';
 
 class ApiError extends Error {
     constructor(message, status, data) {
@@ -29,7 +31,7 @@ export const apiService = {
     // Validación y datos iniciales
     async getValidData() {
         try {
-            const response = await fetch(`${API_BASE_URL}/valid-data`);
+            const response = await fetch(`${RECOMMENDER_BASE_URL}/valid-data`);
             return handleResponse(response);
         } catch (error) {
             console.error('Error obteniendo datos válidos:', error);
@@ -40,7 +42,7 @@ export const apiService = {
     // Predicción de ventas
     async predictSales(store, dept, date) {
         try {
-            const response = await fetch(`${API_BASE_URL}/predict-sales`, {
+            const response = await fetch(`${SALES_PREDICTION_BASE_URL}/predict-sales`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +67,7 @@ export const apiService = {
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await fetch(`${API_BASE_URL}/classify-image`, {
+            const response = await fetch(`${CLASSIFIER_BASE_URL}/classify-image`, {
                 method: 'POST',
                 body: formData
             });
@@ -80,7 +82,7 @@ export const apiService = {
     // Recomendaciones
     async getRecommendations(params = {}) {
         try {
-            const response = await fetch(`${API_BASE_URL}/recommend`, {
+            const response = await fetch(`${RECOMMENDER_BASE_URL}/recommend`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +127,7 @@ export const apiService = {
     // Health check
     async healthCheck() {
         try {
-            const response = await fetch(`${API_BASE_URL}/`);
+            const response = await fetch(`${RECOMMENDER_BASE_URL}/`);
             return handleResponse(response);
         } catch (error) {
             console.error('Error en health check:', error);
