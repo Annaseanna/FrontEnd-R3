@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://backend-t3-diohe.onrender.com';
 
 class ApiError extends Error {
     constructor(message, status, data) {
