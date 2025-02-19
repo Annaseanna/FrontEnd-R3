@@ -320,7 +320,7 @@ function App() {
                                 {classificationResult && (
                                     <div className="mt-6 p-4 bg-gray-700 rounded-lg">
                                         <h3 className="text-lg font-semibold mb-2">Resultado:</h3>
-                                        <p>Clase: {classificationResult.predicted_class}</p>
+                                        <p>Clase: {classificationResult.confidence}</p>
                                         <p>Confianza: {(classificationResult.confidence * 100).toFixed(2)}%</p>
                                     </div>
                                 )}
