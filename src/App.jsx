@@ -34,8 +34,22 @@ function App() {
     useEffect(() => {
         const loadValidData = async () => {
             try {
-                const data = await apiService.getValidData();
-                setValidData(data);
+                // Definir los valores de tiendas y departamentos
+                const validStores = Array.from({ length: 45 }, (_, i) => i + 1); // Tiendas del 1 al 45
+                const validDepartments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 44, 45, 46, 47, 48, 49, 51, 52, 54, 55, 56, 58, 59, 60, 67, 71, 72, 74, 77, 78, 79, 80, 81, 82, 83, 85, 87, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 39, 50, 43, 65];
+
+                // Definir el rango de fechas
+                const dateRange = {
+                    min_date: '2010-02-05',
+                    max_date: '2013-07-26'
+                };
+
+                // Establecer los datos en el estado
+                setValidData({
+                    valid_stores: validStores,
+                    valid_departments: validDepartments,
+                    date_range: dateRange
+                });
             } catch (error) {
                 setError('Error cargando datos iniciales');
                 console.error('Error:', error);
