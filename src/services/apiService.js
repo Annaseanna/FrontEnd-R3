@@ -86,7 +86,7 @@ export const apiService = {
     // Recomendaciones
     async getRecommendations(params = {}) {
         try {
-            const response = await fetch(`${RECOMMENDER_BASE_URL}/recommend`, {
+            const response = await fetch(`${RECOMMENDER_BASE_URL}/predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
