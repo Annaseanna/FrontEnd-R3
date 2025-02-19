@@ -1,6 +1,6 @@
 const RECOMMENDER_BASE_URL = 'https://recommencer3g.onrender.com';
 const CLASSIFIER_BASE_URL = 'https://classifier-images.onrender.com';
-const SALES_PREDICTION_BASE_URL = 'https://sales-prediction-g5xo.onrender.com/';
+const SALES_PREDICTION_BASE_URL = 'https://sales-prediction-g5xo.onrender.com';
 
 
 
