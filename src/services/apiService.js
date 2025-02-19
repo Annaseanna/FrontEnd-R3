@@ -46,7 +46,7 @@ export const apiService = {
     // Predicción de ventas
     async predictSales(store, dept, date) {
         try {
-            const response = await fetch(`${SALES_PREDICTION_BASE_URL}predict`, {
+            const response = await fetch(`${SALES_PREDICTION_BASE_URL}/predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
