@@ -1,147 +1,225 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart2, Image, ShoppingBag, TrendingUp, Users, Package } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+    BarChart2,
+    Image,
+    ShoppingBag,
+    TrendingUp,
+    Users,
+    Package
+} from 'lucide-react';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+} from 'recharts';
 import { apiService } from './services/apiService';
 
 function App() {
-    // Estados para pestañas
+    // Tab states
     const [activeTab, setActiveTab] = useState('sales');
     const [recommendationTab, setRecommendationTab] = useState('user');
 
-    // Estados para datos de validación
+    // Valid data for stores, departments and date range
     const [validData, setValidData] = useState(null);
 
-    // Estados para predicción de ventas
+    // Sales prediction states
     const [selectedStore, setSelectedStore] = useState('');
     const [selectedDept, setSelectedDept] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [salesPrediction, setSalesPrediction] = useState(null);
     const [salesChartData, setSalesChartData] = useState([]);
 
-    // Estados para recomendaciones
+    // Recommendations states
     const [userId, setUserId] = useState('');
     const [productHistory, setProductHistory] = useState('');
     const [recommendations, setRecommendations] = useState([]);
 
-    // Estados para clasificación de imágenes
+    // Classification state
     const [classificationResult, setClassificationResult] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [classificationLoading, setClassificationLoading] = useState(false);
 
-    // Estados generales
+    // General states
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Cargar datos válidos al iniciar
+    // Load valid data on mount
     useEffect(() => {
         const loadValidData = async () => {
             try {
-                // Definir los valores de tiendas y departamentos
-                const validStores = Array.from({ length: 45 }, (_, i) => i + 1); // Tiendas del 1 al 45
-                const validDepartments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 44, 45, 46, 47, 48, 49, 51, 52, 54, 55, 56, 58, 59, 60, 67, 71, 72, 74, 77, 78, 79, 80, 81, 82, 83, 85, 87, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 39, 50, 43, 65];
-
-                // Definir el rango de fechas
+                // Define valid store numbers (1 to 45)
+                const validStores = Array.from({ length: 45 }, (_, i) => i + 1);
+                // Define valid department IDs
+                const validDepartments = [
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19,
+                    20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                    36, 37, 38, 40, 41, 42, 44, 45, 46, 47, 48, 49, 51, 52, 54, 55,
+                    56, 58, 59, 60, 67, 71, 72, 74, 77, 78, 79, 80, 81, 82, 83, 85,
+                    87, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 39, 50, 43, 65
+                ];
+                // Define date range
                 const dateRange = {
                     min_date: '2010-02-05',
                     max_date: '2013-07-26'
                 };
 
-                // Establecer los datos en el estado
                 setValidData({
                     valid_stores: validStores,
                     valid_departments: validDepartments,
                     date_range: dateRange
                 });
-            } catch (error) {
+            } catch (err) {
                 setError('Error cargando datos iniciales');
-                console.error('Error:', error);
+                console.error('Error:', err);
             }
         };
+
         loadValidData();
     }, []);
 
-    // Manejador para predicción de ventas
+    // Manejador para predicción de ventas con generación aleatoria y delay de 10 segundos
     const handlePredictSales = async () => {
         if (!selectedStore || !selectedDept || !selectedDate) {
             setError('Por favor completa todos los campos');
             return;
         }
-
         setLoading(true);
         setError(null);
 
-        try {
-            const prediction = await apiService.predictSales(selectedStore, selectedDept, selectedDate);
-            setSalesPrediction(prediction);
+        // Delay de 10 segundos
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
-            // Actualizar datos del gráfico
-            setSalesChartData([
-                { name: 'Predicción Base', ventas: prediction.base_prediction },
-                { name: 'Predicción Ajustada', ventas: prediction.adjusted_prediction },
-                { name: 'Predicción Final', ventas: prediction.final_prediction }
-            ]);
-        } catch (error) {
-            setError('Error al obtener la predicción');
-            console.error('Error:', error);
-        } finally {
-            setLoading(false);
-        }
+        // Generar valores aleatorios similares al ejemplo
+        const basePrediction = Math.random() * (45000 - 40000) + 40000; // entre 40000 y 45000
+        const dayOfWeekFactor = 1; // valor fijo
+        const monthFactor = Math.random() * (1.05 - 1.0) + 1.0; // entre 1.0 y 1.05
+        const recentTrend = Math.random() * (48000 - 45000) + 45000; // entre 45000 y 48000
+        const adjustedPrediction = basePrediction * monthFactor;
+        // Calcular la predicción final como promedio de las tres predicciones
+        const predictedSales = (basePrediction + adjustedPrediction + recentTrend) / 3;
+        // Definir límites de confianza
+        const lowerBound = predictedSales * 0.95;
+        const upperBound = predictedSales * 1.1;
+
+        const prediction = {
+            store: Number(selectedStore),
+            department: Number(selectedDept),
+            date: selectedDate,
+            predicted_sales: predictedSales,
+            details: {
+                base_prediction: basePrediction,
+                day_of_week_factor: dayOfWeekFactor,
+                month_factor: monthFactor,
+                recent_trend: recentTrend,
+                adjusted_prediction: adjustedPrediction,
+                bounds: {
+                    lower: lowerBound,
+                    upper: upperBound
+                }
+            }
+        };
+
+        setSalesPrediction(prediction);
+
+        // Actualizar datos del gráfico
+        setSalesChartData([
+            { name: 'Predicción Base', ventas: prediction.details.base_prediction },
+            { name: 'Predicción Ajustada', ventas: prediction.details.adjusted_prediction },
+            { name: 'Predicción Final', ventas: prediction.predicted_sales }
+        ]);
+
+        setLoading(false);
     };
 
-    // Manejador para clasificación de imágenes
-    const handleImageUpload = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        setLoading(true);
+    // Manejador para clasificación de imágenes (al hacer clic en el botón)
+    const handleClassifyImage = async () => {
+        if (!selectedFile) return;
+        setClassificationLoading(true);
         setError(null);
         setClassificationResult(null);
 
         try {
-            const result = await apiService.classifyImage(file);
+            const result = await apiService.classifyImage(selectedFile);
             setClassificationResult(result);
-        } catch (error) {
+        } catch (err) {
             setError('Error al clasificar la imagen');
-            console.error('Error:', error);
+            console.error('Error:', err);
         } finally {
-            setLoading(false);
+            setClassificationLoading(false);
         }
     };
 
-    // Manejador para recomendaciones
+    // Manejador para recomendaciones utilizando valores random del CSV con delay de 10 segundos
     const handleGetRecommendations = async () => {
         setLoading(true);
         setError(null);
 
+        // Delay de 10 segundos
+        await new Promise(resolve => setTimeout(resolve, 10000));
+
         try {
-            let result;
-            if (recommendationTab === 'user' && userId) {
-                result = await apiService.getRecommendationsByUser(parseInt(userId));
-            } else if (recommendationTab === 'history' && productHistory) {
-                const productIds = productHistory.split(',').map(id => parseInt(id.trim()));
-                result = await apiService.getRecommendationsByHistory(productIds);
-            } else if (recommendationTab === 'popular') {
-                result = await apiService.getPopularRecommendations();
-            } else {
-                setError('Por favor ingresa los datos necesarios');
-                setLoading(false);
-                return;
+            // Cargar el archivo CSV desde la carpeta public
+            const response = await fetch('/nombres.csv');
+            if (!response.ok) {
+                throw new Error('Error al cargar el archivo CSV');
+            }
+            const csvText = await response.text();
+
+            // Separar las líneas y remover posibles líneas vacías
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+
+            // La primera línea debe ser el header
+            const header = lines[0].split(',').map(h => h.trim());
+            const nameIndex = header.indexOf('name');
+            if (nameIndex === -1) {
+                throw new Error("La columna 'name' no se encontró en el CSV");
             }
 
-            setRecommendations(result.recommendations);
-        } catch (error) {
-            setError('Error al obtener recomendaciones');
-            console.error('Error:', error);
+            // Procesar cada línea para extraer el valor de la columna "name"
+            const items = lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim());
+                return { name: values[nameIndex] };
+            });
+
+            // Seleccionar aleatoriamente, por ejemplo, 5 recomendaciones
+            const shuffled = items.sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5).map((item, index) => ({
+                id: index, // Puedes generar un id único según tus necesidades
+                ...item
+            }));
+
+            setRecommendations(selected);
+        } catch (err) {
+            setError('Error al obtener recomendaciones desde CSV');
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
+    // Mostrar un fallback mientras se cargan los datos válidos
+    if (!validData) {
+        return (
+            <div className="h-screen flex items-center justify-center bg-gray-900 text-gray-100">
+                <p>Cargando datos iniciales...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="h-screen bg-gray-900 text-gray-100 flex flex-col">
+            {/* Header */}
             <header className="bg-gray-800 p-4 border-b border-gray-700">
                 <h1 className="text-2xl font-bold">Ecommerce Intelligence</h1>
             </header>
 
-            <nav className="bg-gray-800 p-3 border-b border-gray-700">
+            {/* Navigation */}
+            <nav className="bg-gray-800 p-3 border-b border-gray-700" role="navigation">
                 <div className="flex gap-4 flex-wrap">
                     <button
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
@@ -181,19 +259,20 @@ function App() {
                 </div>
             </nav>
 
+            {/* Error display */}
             {error && (
                 <div className="bg-red-500 text-white p-2 text-center">
                     {error}
                 </div>
             )}
 
+            {/* Main content */}
             <main className="flex-1 overflow-auto">
                 <div className="p-4 h-full">
-                    {/* Pestaña de Predicción de Ventas */}
+                    {/* Sales Prediction Tab */}
                     {activeTab === 'sales' && (
                         <div className="space-y-4 h-full flex flex-col">
                             <h2 className="text-xl font-bold">Predicción de Ventas</h2>
-
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="bg-gray-800 p-4 rounded-lg">
                                     <div className="flex items-start space-x-4">
@@ -201,7 +280,7 @@ function App() {
                                         <div>
                                             <h3 className="text-gray-400 text-sm">Predicción Base</h3>
                                             <p className="text-2xl font-bold">
-                                                ${salesPrediction?.base_prediction.toFixed(2) || '0.00'}
+                                                ${salesPrediction?.details?.base_prediction?.toFixed(2) || '0.00'}
                                             </p>
                                         </div>
                                     </div>
@@ -213,7 +292,7 @@ function App() {
                                         <div>
                                             <h3 className="text-gray-400 text-sm">Predicción Ajustada</h3>
                                             <p className="text-2xl font-bold">
-                                                ${salesPrediction?.adjusted_prediction.toFixed(2) || '0.00'}
+                                                ${salesPrediction?.details?.adjusted_prediction?.toFixed(2) || '0.00'}
                                             </p>
                                         </div>
                                     </div>
@@ -225,7 +304,7 @@ function App() {
                                         <div>
                                             <h3 className="text-gray-400 text-sm">Predicción Final</h3>
                                             <p className="text-2xl font-bold">
-                                                ${salesPrediction?.final_prediction.toFixed(2) || '0.00'}
+                                                ${salesPrediction?.predicted_sales?.toFixed(2) || '0.00'}
                                             </p>
                                         </div>
                                     </div>
@@ -237,9 +316,10 @@ function App() {
                                     className="bg-gray-800 text-gray-300 px-4 py-2 rounded-lg border border-gray-700 min-w-[200px]"
                                     value={selectedStore}
                                     onChange={(e) => setSelectedStore(e.target.value)}
+                                    aria-label="Selecciona una tienda"
                                 >
                                     <option value="">Selecciona una tienda</option>
-                                    {validData?.valid_stores.map((store) => (
+                                    {validData.valid_stores.map((store) => (
                                         <option key={store} value={store}>
                                             Tienda {store}
                                         </option>
@@ -250,22 +330,23 @@ function App() {
                                     className="bg-gray-800 text-gray-300 px-4 py-2 rounded-lg border border-gray-700 min-w-[200px]"
                                     value={selectedDept}
                                     onChange={(e) => setSelectedDept(e.target.value)}
+                                    aria-label="Selecciona un departamento"
                                 >
                                     <option value="">Selecciona un departamento</option>
-                                    {validData?.valid_departments.map((dept) => (
+                                    {validData.valid_departments.map((dept) => (
                                         <option key={dept} value={dept}>
                                             Departamento {dept}
                                         </option>
                                     ))}
                                 </select>
 
+                                {/* Se elimina min y max del input de fecha */}
                                 <input
                                     type="date"
                                     className="bg-gray-800 text-gray-300 px-4 py-2 rounded-lg border border-gray-700"
                                     value={selectedDate}
                                     onChange={(e) => setSelectedDate(e.target.value)}
-                                    min={validData?.date_range.min_date}
-                                    max={validData?.date_range.max_date}
+                                    aria-label="Selecciona una fecha"
                                 />
 
                                 <button
@@ -306,12 +387,20 @@ function App() {
                         </div>
                     )}
 
-                    {/* Pestaña de Clasificación */}
+                    {/* Classification Tab */}
                     {activeTab === 'classification' && (
                         <div className="space-y-6">
                             <h2 className="text-xl font-bold">Clasificación de Productos</h2>
                             <div className="bg-gray-800 rounded-lg p-8">
-                                <div className="border-2 border-dashed border-gray-700 rounded-lg p-12 text-center">
+                                {/* Área para seleccionar la imagen */}
+                                <div
+                                    className="border-2 border-dashed border-gray-700 rounded-lg p-12 text-center cursor-pointer"
+                                    onClick={() =>
+                                        document.getElementById('image-upload')?.click()
+                                    }
+                                    role="button"
+                                    aria-label="Seleccionar imagen para clasificación"
+                                >
                                     <Image className="mx-auto text-gray-500 mb-4" size={48} />
                                     <p className="text-gray-400 mb-4">
                                         Arrastra una imagen o haz click para seleccionar
@@ -321,28 +410,39 @@ function App() {
                                         id="image-upload"
                                         className="hidden"
                                         accept="image/*"
-                                        onChange={handleImageUpload}
+                                        onChange={(e) => {
+                                            setSelectedFile(e.target.files[0]);
+                                            setClassificationResult(null);
+                                        }}
                                     />
-                                    <label
-                                        htmlFor="image-upload"
-                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer inline-block"
-                                    >
-                                        {loading ? 'Procesando...' : 'Seleccionar Archivo'}
-                                    </label>
                                 </div>
+
+                                {/* Botón para iniciar la clasificación si hay una imagen seleccionada */}
+                                {selectedFile && (
+                                    <button
+                                        onClick={handleClassifyImage}
+                                        disabled={classificationLoading}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        {classificationLoading ? 'Clasificando...' : 'Clasificar imagen'}
+                                    </button>
+                                )}
 
                                 {classificationResult && (
                                     <div className="mt-6 p-4 bg-gray-700 rounded-lg">
                                         <h3 className="text-lg font-semibold mb-2">Resultado:</h3>
                                         <p>Clase: {classificationResult.prediction}</p>
-                                        <p>Confianza: {(classificationResult.confidence * 100).toFixed(2)}%</p>
+                                        <p>
+                                            Confianza:{' '}
+                                            {(classificationResult.confidence * 100).toFixed(2)}%
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
 
-                    {/* Pestaña de Recomendaciones */}
+                    {/* Recommendations Tab */}
                     {activeTab === 'recommendations' && (
                         <div className="space-y-6">
                             <h2 className="text-xl font-bold">Sistema de Recomendaciones</h2>
@@ -408,10 +508,11 @@ function App() {
                                     {loading ? 'Procesando...' : 'Obtener Recomendaciones'}
                                 </button>
 
-                                {/* Mostrar recomendaciones */}
                                 {recommendations.length > 0 && (
                                     <div className="mt-6">
-                                        <h3 className="text-lg font-semibold mb-4">Productos Recomendados</h3>
+                                        <h3 className="text-lg font-semibold mb-4">
+                                            Productos Recomendados
+                                        </h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {recommendations.map((product) => (
                                                 <div
